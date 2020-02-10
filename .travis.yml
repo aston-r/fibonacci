@@ -3,18 +3,18 @@ services:
   - docker
 
 before_install:
-  - docker build -t aston8/fibonacci-test -f ./client/Dockerfile.dev ./client
+  - docker build -t yevhenlodovyi/fibonacci-test -f client/Dockerfile.dev client
 
 script:
-  - docker run aston8/fibonacci-test npm test -- --coverage
+  - docker run yevhenlodovyi/fibonacci-test npm test -- --coverage
 
 after_success:
-  - docker build -t aston8/fibonacci-client ./client
-  - docker build -t aston8/fibonacci-nginx ./nginx
-  - docker build -t aston8/fibonacci-server ./server
-  - docker build -t aston8/fibonacci-worker ./worker
+  - docker build -t yevhenlodovyi/fibonacci-client client
+  - docker build -t yevhenlodovyi/fibonacci-nginx nginx
+  - docker build -t yevhenlodovyi/fibonacci-server server
+  - docker build -t yevhenlodovyi/fibonacci-worker worker
   - echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_ID}" --password-stdin
-  - docker push aston8/fibonacci-client
-  - docker push aston8/fibonacci-nginx
-  - docker push aston8/fibonacci-server
-  - docker push aston8/fibonacci-worker
+  - docker push yevhenlodovyi/fibonacci-client
+  - docker push yevhenlodovyi/fibonacci-nginx
+  - docker push yevhenlodovyi/fibonacci-server
+  - docker push yevhenlodovyi/fibonacci-worker
