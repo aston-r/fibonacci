@@ -4,6 +4,10 @@ services:
 
 before_install:
   - docker build -t yevhenlodovyi/fibonacci-test -f client/Dockerfile.dev client
+  - curl https://sdk.cloud.google.com | bash > /dev/null
+  - source ${HOME}/google-cloud-sdk/path.bash.inc
+  - gcloud components update kubectl
+  - gcloud auth activate-service-account --key-file service-account.json
 
 script:
   - docker run yevhenlodovyi/fibonacci-test npm test -- --coverage
