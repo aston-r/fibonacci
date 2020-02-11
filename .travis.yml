@@ -3,7 +3,6 @@ services:
   - docker
 env:
   global:
-    - GIT_SHA=$(git rev-parse HEAD)
     - CLOUDSDK_CORE_DISABLE_PROMPTS=1
 before_install:
   - docker build -t yevhenlodovyi/fibonacci-test -f client/Dockerfile.dev client
@@ -22,6 +21,6 @@ script:
 
 deploy:
   provider: script
-  script: bash deploy.sh --publish --deploy
+  script: bash deploy-k8s.sh --publish --deploy
   on:
     branch: master

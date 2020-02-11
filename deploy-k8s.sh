@@ -33,18 +33,24 @@ while true; do
   esac
 done
 
+# Get the latest commit id
+git_sha="$(git rev-parse HEAD)"
+
 # Build and ulpload images to docker registry
-subdirs="$(find . -maxdepth 2 -type f -name Dockerfile -exec dirname {} \; | xargs -I {} basename {})"
+# NOTE: nginx is used only in docker-compose configuration, so skip it.
+subdirs="$(find . -maxdepth 2 -type f -name Dockerfile -exec dirname {} \; \
+                   | xargs -I {} basename {} \
+                   | grep -v nginx)"
 for subdir in ${subdirs}; do
     tag_prefix="${DOCKER_HUB_ACCOUNT}/${PROJECT_NAME}-${subdir}"
     echo "Building '${tag_prefix}' image to registry..."
     docker build -t "${tag_prefix}:latest" \
-                 -t "${tag_prefix}:${GIT_SHA}" \
+                 -t "${tag_prefix}:${git_sha}" \
                  "${subdir}"
-    if [[ "${publish}" == 'Y']]; then
+    if [[ "${publish}" == 'Y' ]]; then
         echo "Uploading '${tag_prefix}' to registry..."
         docker push "${tag_prefix}:latest"
-        docker push "${tag_prefix}:${GIT_SHA}"
+        docker push "${tag_prefix}:${git_sha}"
     fi
 done
 
@@ -57,6 +63,6 @@ if [[ "${deploy}" == 'Y' ]]; then
     # https://github.com/kubernetes/kubernetes/issues/33664
     for subdir in ${subdirs}; do
         kubectl set image deployments/${subdir}-deployment \
-                    ${subdir}="${DOCKER_HUB_ACCOUNT}/${PROJECT_NAME}-${subdir}:${GIT_SHA}"
+                    ${subdir}="${DOCKER_HUB_ACCOUNT}/${PROJECT_NAME}-${subdir}:${git_sha}"
     done
 fi
