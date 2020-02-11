@@ -13,5 +13,5 @@ spec:
         component: worker
     spec:
       containers:
-      - name: worker
-        image: yevhenlodovyi/fibonacci-worker
+        - name: worker
+          image: yevhenlodovyi/fibonacci-worker

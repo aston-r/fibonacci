@@ -13,7 +13,7 @@ spec:
         component: server
     spec:
       containers:
-      - name: server
-        image: yevhenlodovyi/fibonacci-server
-        ports:
-        - containerPort: 5000
+        - name: server
+          image: yevhenlodovyi/fibonacci-server
+          ports:
+          - containerPort: 5000
