@@ -38,9 +38,9 @@ git_sha="$(git rev-parse HEAD)"
 
 # Build and ulpload images to docker registry
 # NOTE: nginx is used only in docker-compose configuration, so skip it.
-subdirs="$(find . -maxdepth 2 -type f -name Dockerfile -exec dirname {} \; \
-                   | xargs -I {} basename {} \
-                   | grep -v nginx)"
+subdirs="$(find . -maxdepth 2 -name 'Dockerfile' -not -path './nginx/*' -printf '%p\n' \
+                   | xargs -I {} dirname {} \
+                   | xargs -I {} basename {})"
 for subdir in ${subdirs}; do
     tag_prefix="${DOCKER_HUB_ACCOUNT}/${PROJECT_NAME}-${subdir}"
     echo "Building '${tag_prefix}' image to registry..."
@@ -62,7 +62,7 @@ if [[ "${deploy}" == 'Y' ]]; then
     # TODO:check if there is more convinient way:
     # https://github.com/kubernetes/kubernetes/issues/33664
     for subdir in ${subdirs}; do
-        kubectl set image deployments/${subdir}-deployment \
-                    ${subdir}="${DOCKER_HUB_ACCOUNT}/${PROJECT_NAME}-${subdir}:${git_sha}"
+        kubectl set image "deployments/${subdir}-deployment" \
+                          "${subdir}=${DOCKER_HUB_ACCOUNT}/${PROJECT_NAME}-${subdir}:${git_sha}"
     done
 fi

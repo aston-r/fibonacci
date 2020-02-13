@@ -21,6 +21,7 @@ before_install:
     fi
 
 script:
+  - bash -c 'shopt -s globstar nullglob; shellcheck **/*.{sh,ksh,bash}'
   - docker run yevhenlodovyi/fibonacci-test npm test -- --coverage
 
 deploy:
